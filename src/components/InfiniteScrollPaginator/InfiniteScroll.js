@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import React, { useCallback, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -40,6 +40,15 @@ const calculateOffset = (el, scrollTop) => {
   );
 };
 
+/**
+ * Calculates offset in percentage of their parent height
+ * @param {number} offset
+ * @param {number} parentHeight
+ */
+const calculateOffsetInPercentage = (offset, parentHeight) => {
+  return (offset / parentHeight) * 100;
+};
+
 /** @param {import("types").InfiniteScrollProps} props */
 const InfiniteScroll = ({
   children,
@@ -66,6 +75,7 @@ const InfiniteScroll = ({
 
     let offset = 0;
     let reverseOffset = 0;
+    let parentHeight = 0;
     if (useWindow) {
       const doc =
         document.documentElement || document.body.parentNode || document.body;
@@ -73,12 +83,26 @@ const InfiniteScroll = ({
         window.pageYOffset !== undefined ? window.pageYOffset : doc.scrollTop;
       offset = calculateOffset(el, scrollTop);
       reverseOffset = scrollTop;
+      parentHeight = window.innerHeight;
+      // console.log('window: ', offset, reverseOffset);
     } else if (parentElement) {
       offset =
         el.scrollHeight - parentElement.scrollTop - parentElement.clientHeight;
       reverseOffset = parentElement.scrollTop;
+      parentHeight = parentElement.clientHeight;
+
+      // console.log('el.scrollHeight: ', el.scrollHeight);
+      // console.log('parentElement.scrollTop: ',parentElement.scrollTop);
+      // console.log('parentElement.clientHeight: ',parentElement.clientHeight);
+
+      // console.log('parent: ', offset, reverseOffset);
     }
-    if (listenToScroll) listenToScroll(offset, reverseOffset);
+    if (listenToScroll)
+      listenToScroll(
+        offset,
+        reverseOffset,
+        calculateOffsetInPercentage(offset, parentHeight),
+      );
 
     // Here we make sure the element is visible as well as checking the offset
     if (
