@@ -1,5 +1,5 @@
 {
-  "name": "stream-chat-react",
+  "name": "@atulbi/stream-chat-react",
   "version": "2.2.2",
   "description": "React components to create chat conversations or livestream style chat",
   "author": "GetStream",

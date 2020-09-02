@@ -80,6 +80,7 @@ class MessageList extends PureComponent {
     ];
     const previousLastMessage =
       prevProps.messages[prevProps.messages.length - 1];
+    // console.log('componentDidUpdate: ', userScrolledUp);
     if (!previousLastMessage || !currentLastMessage) {
       return;
     }

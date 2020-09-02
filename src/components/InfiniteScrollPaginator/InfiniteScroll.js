@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useCallback, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 /**
  * Prevents Chrome hangups
@@ -84,7 +85,7 @@ const InfiniteScroll = ({
       offset = calculateOffset(el, scrollTop);
       reverseOffset = scrollTop;
       parentHeight = window.innerHeight;
-      // console.log('window: ', offset, reverseOffset);
+      console.log('window: ', offset, reverseOffset);
     } else if (parentElement) {
       offset =
         el.scrollHeight - parentElement.scrollTop - parentElement.clientHeight;
@@ -120,16 +121,18 @@ const InfiniteScroll = ({
       return () => {};
     }
 
-    scrollEl.addEventListener('scroll', scrollListener, useCapture);
-    scrollEl.addEventListener('resize', scrollListener, useCapture);
+    const debouncedScrollListener = _.debounce(() => { setTimeout(scrollListener, 100)}, 100);
+
+    scrollEl.addEventListener('scroll', debouncedScrollListener, useCapture);
+    scrollEl.addEventListener('resize', debouncedScrollListener, useCapture);
 
     if (initialLoad) {
-      scrollListener();
+      setTimeout(scrollListener, 100)
     }
 
     return () => {
-      scrollEl.removeEventListener('scroll', scrollListener, useCapture);
-      scrollEl.removeEventListener('resize', scrollListener, useCapture);
+      scrollEl.removeEventListener('scroll', debouncedScrollListener, useCapture);
+      scrollEl.removeEventListener('resize', debouncedScrollListener, useCapture);
     };
   }, [hasMore, initialLoad, isLoading, scrollListener, useCapture, useWindow]);
 
